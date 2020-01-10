@@ -1,0 +1,38 @@
+Mimic the original grep behavior and return exit_success when
+at least one xz compressed file matches given pattern.
+
+upstream commit ceca37901783988204caaf40dff4623d535cc789
+
+diff --git a/src/scripts/xzgrep.in b/src/scripts/xzgrep.in
+index 9bc5656..f7e4959 100644
+--- a/src/scripts/xzgrep.in
++++ b/src/scripts/xzgrep.in
+@@ -147,7 +147,9 @@ if test $# -eq 0; then
+ fi
+ 
+ exec 3>&1
+-res=0
++
++# res=1 means that no file matched yet
++res=1
+ 
+ for i; do
+   case $i in
+@@ -194,7 +196,16 @@ for i; do
+     fi >&3 5>&-
+   )
+   r=$?
++
++  # fail occured previously, nothing worse can happen
++  test $res -gt 1 && continue
++
+   test "$xz_status" -eq 0 || test "$xz_status" -eq 2 || r=2
+-  test $res -lt $r && res=$r
++
++  # still no match
++  test $r -eq 1 && continue
++
++  # 0 == match, >=2 == fail
++  res=$r
+ done
+ exit $res

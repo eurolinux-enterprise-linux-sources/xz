@@ -3,7 +3,7 @@
 Summary:	LZMA compression utilities
 Name:		xz
 Version:	4.999.9
-Release:	0.3.beta.%{git_date}git%{?dist}
+Release:	0.5.beta.%{git_date}git%{?dist}
 License:	LGPLv2+
 Group:		Applications/File
 # source created as "make dist" in checked out GIT tree
@@ -12,6 +12,26 @@ Source0:	%{name}-%{version}beta.%{git_date}git.tar.xz
 URL:		http://tukaani.org/%{name}/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 Requires:	%{name}-libs = %{version}-%{release}
+
+# fix 'xzgrep -h' to behave as expected
+# ~> upstream (5019413a0)
+# ~> #850898
+Patch0:		xz-4.999.9beta-xzgrep-h-option-bz850898.patch
+
+# fix 'xzgrep -l' to print file names only (and do not fail)
+# ~> upstream (c7210d9, 4027799)
+# ~> #863024
+Patch1:		xz-4.999.9beta-xzgrep-l.patch
+
+# fix for 'xzfgrep -F'
+# ~> upstream (bd5002f58)
+# ~> #988703
+Patch2:		xz-4.999.9beta-xzfgrep-F-option.patch
+
+# fix for bad exit value when not _all_ files match
+# ~> upstream (ceca37901783
+# ~> #1108085
+Patch3:		xz-4.999.9beta-xzgrep-exit.patch
 
 %description
 XZ Utils are an attempt to make LZMA compression easy to use on free (as in
@@ -56,6 +76,10 @@ commands that deal with the older LZMA format.
 
 %prep
 %setup -q -n %{name}-%{version}beta
+%patch0 -p1 -b .xzgrep-h-option
+%patch1 -p1 -b .xzgrep-l-option
+%patch2 -p1 -b .xzfgrep-F-option
+%patch3 -p1 -b .xzgrep-exit-status
 
 %build
 CFLAGS="%{optflags} -D_FILE_OFFSET_BITS=64" \
@@ -108,6 +132,14 @@ rm -rf %{buildroot}
 %{_mandir}/man1/*lz*
 
 %changelog
+* Fri Jun 13 2014 Pavel Raiskup <praiskup@redhat.com> - 4.999.9-0.5.beta.20091007git
+- xzgrep: return 0 when at least one file matches (#1108085)
+
+* Thu Apr 03 2014 Pavel Raiskup <praiskup@redhat.com> - 4.999.9-0.4.beta.20091007git
+- fix 'xzgrep -h' to behave as expected (#850898)
+- fix 'xzgrep -l' to behave as expected (#863024)
+- fix 'xzfgrep -F' to behave as expected (#988703)
+
 * Tue Feb 23 2010 Jindrich Novy <jnovy@redhat.com> 4.999.9-0.3.20091007.beta
 - move xz man pages to main package, leave lzma ones where they belong
 - remove URL from Source0, it is a git snapshot
