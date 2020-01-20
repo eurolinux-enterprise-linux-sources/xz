@@ -3,7 +3,7 @@
 Summary:	LZMA compression utilities
 Name:		xz
 Version:	5.1.2
-Release:	8alpha%{?dist}
+Release:	9alpha%{?dist}
 License:	LGPLv2+
 Group:		Applications/File
 # official upstream release
@@ -23,6 +23,11 @@ Patch0:		xz-5.1.2alpha-man-page-day.patch
 # ~> upstream (5019413a0)
 # ~> #850898
 Patch1:		xz-5.1.2alpha-xzgrep-and-h-option.patch
+
+# fix less version checking
+# ~> upstream (db5c1817fa, 9e6dabcf22)
+# ~> #1082639, #1015924
+Patch2:		xz-5.1.2alpha-less-version-check.patch
 
 %description
 XZ Utils are an attempt to make LZMA compression easy to use on free (as in
@@ -78,6 +83,7 @@ commands that deal with the older LZMA format.
 %setup -q -a1 -n %{name}-%{version}alpha
 %patch0  -p1 -b .man-page-day
 %patch1  -p1 -b .xzgrep-and-h-option
+%patch2  -p1 -b .less-version-check
 
 for i in `find . -name config.sub`; do
   perl -pi -e "s/ppc64-\*/ppc64-\* \| ppc64p7-\*/" $i
@@ -155,6 +161,9 @@ rm -rf %{buildroot}
 %{_mandir}/man1/*lz*
 
 %changelog
+* Tue Jun 17 2014 Pavel Raiskup <praiskup@redhat.com> - 5.1.2-9alpha
+- better check the version of less binary (#1082639)
+
 * Fri Jan 24 2014 Daniel Mach <dmach@redhat.com> - 5.1.2-8alpha
 - Mass rebuild 2014-01-24
 
