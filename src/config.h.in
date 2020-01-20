@@ -141,8 +141,11 @@
 /* Define if the GNU gettext() function is already present or preinstalled. */
 #undef HAVE_GETTEXT
 
-/* Define if you have the iconv() function. */
+/* Define if you have the iconv() function and it works. */
 #undef HAVE_ICONV
+
+/* Define to 1 if you have the <immintrin.h> header file. */
+#undef HAVE_IMMINTRIN_H
 
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
@@ -179,9 +182,6 @@
 
 /* Define to 1 if you have the `posix_fadvise' function. */
 #undef HAVE_POSIX_FADVISE
-
-/* Define if you have POSIX threads libraries and header files. */
-#undef HAVE_PTHREAD
 
 /* Define to 1 if you have the `pthread_condattr_setclock' function. */
 #undef HAVE_PTHREAD_CONDATTR_SETCLOCK
@@ -280,15 +280,25 @@
 /* Define to 1 if the system has the type `_Bool'. */
 #undef HAVE__BOOL
 
-/* Define to the sub-directory in which libtool stores uninstalled libraries.
-   */
+/* Define to 1 if _mm_movemask_epi8 is available. */
+#undef HAVE__MM_MOVEMASK_EPI8
+
+/* Define to the sub-directory where libtool stores uninstalled libraries. */
 #undef LT_OBJDIR
+
+/* Define to 1 when using POSIX threads (pthreads). */
+#undef MYTHREAD_POSIX
+
+/* Define to 1 when using Windows Vista compatible threads. This uses features
+   that are not available on Windows XP. */
+#undef MYTHREAD_VISTA
+
+/* Define to 1 when using Windows 95 (and thus XP) compatible threads. This
+   avoids use of features that were added in Windows Vista. */
+#undef MYTHREAD_WIN95
 
 /* Define to 1 to disable debugging code. */
 #undef NDEBUG
-
-/* Define to 1 if your C compiler doesn't accept -c and -o together. */
-#undef NO_MINUS_C_MINUS_O
 
 /* Name of package */
 #undef PACKAGE
@@ -320,6 +330,10 @@
 
 /* Define to 1 if you have the ANSI C header files. */
 #undef STDC_HEADERS
+
+/* Define to 1 if the number of available CPU cores can be detected with
+   cpuset(2). */
+#undef TUKLIB_CPUCORES_CPUSET
 
 /* Define to 1 if the number of available CPU cores can be detected with
    pstat_getdynamic(). */

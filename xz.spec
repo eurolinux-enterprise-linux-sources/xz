@@ -2,32 +2,26 @@
 
 Summary:	LZMA compression utilities
 Name:		xz
-Version:	5.1.2
-Release:	9alpha%{?dist}
+Version:	5.2.2
+Release:	1%{?dist}
 License:	LGPLv2+
 Group:		Applications/File
 # official upstream release
-Source0:	http://tukaani.org/%{name}/%{name}-%{version}alpha.tar.gz
+Source0:	http://tukaani.org/%{name}/%{name}-%{version}.tar.gz
 # source created as "make dist" in checked out GIT tree
 Source1:	%{compat_ver}.20100401git.tar.bz2
 URL:		http://tukaani.org/%{name}/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 Requires:	%{name}-libs = %{version}-%{release}
 
-# partly upstream/partly not (yet?)
+# downstream
 # ~> proposal: http://www.mail-archive.com/xz-devel@tukaani.org/msg00153.html
 # ~> #948533
-Patch0:		xz-5.1.2alpha-man-page-day.patch
+Patch0:		xz-5.2.2-man-page-day.patch
 
-# fix 'xzgrep -h' to behave as expected
-# ~> upstream (5019413a0)
-# ~> #850898
-Patch1:		xz-5.1.2alpha-xzgrep-and-h-option.patch
-
-# fix less version checking
-# ~> upstream (db5c1817fa, 9e6dabcf22)
-# ~> #1082639, #1015924
-Patch2:		xz-5.1.2alpha-less-version-check.patch
+# Make sure the alpha symbols' version are kept in RHEL7.
+# ~> downstream
+Patch1:		xz-5.2.2-compat-libs.patch
 
 %description
 XZ Utils are an attempt to make LZMA compression easy to use on free (as in
@@ -80,10 +74,9 @@ The lzma-compat package contains compatibility links for older
 commands that deal with the older LZMA format.
 
 %prep
-%setup -q -a1 -n %{name}-%{version}alpha
+%setup -q -a1 -n %{name}-%{version}
 %patch0  -p1 -b .man-page-day
-%patch1  -p1 -b .xzgrep-and-h-option
-%patch2  -p1 -b .less-version-check
+%patch1  -p1 -b .xzgrep-exit-status-test
 
 for i in `find . -name config.sub`; do
   perl -pi -e "s/ppc64-\*/ppc64-\* \| ppc64p7-\*/" $i
@@ -161,6 +154,12 @@ rm -rf %{buildroot}
 %{_mandir}/man1/*lz*
 
 %changelog
+* Fri Mar 04 2016 Pavel Raiskup <praiskup@redhat.com> - 5.2.2-1
+- rebase to stable release (rhbz#1190713, rhbz#1160193)
+
+* Wed Jul 08 2015 Pavel Raiskup <praiskup@redhat.com> - 5.1.2-12alpha
+- xzgrep: return 0 when at least one file matches (rhbz#1109123)
+
 * Tue Jun 17 2014 Pavel Raiskup <praiskup@redhat.com> - 5.1.2-9alpha
 - better check the version of less binary (#1082639)
 

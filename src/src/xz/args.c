@@ -22,6 +22,7 @@ bool opt_stdout = false;
 bool opt_force = false;
 bool opt_keep_original = false;
 bool opt_robot = false;
+bool opt_ignore_check = false;
 
 // We don't modify or free() this, but we need to assign it in some
 // non-const pointers.
@@ -140,6 +141,8 @@ parse_real(args_info *args, int argc, char **argv)
 		OPT_NO_ADJUST,
 		OPT_INFO_MEMORY,
 		OPT_ROBOT,
+		OPT_FLUSH_TIMEOUT,
+		OPT_IGNORE_CHECK,
 	};
 
 	static const char short_opts[]
@@ -168,6 +171,7 @@ parse_real(args_info *args, int argc, char **argv)
 		// Basic compression settings
 		{ "format",       required_argument, NULL,  'F' },
 		{ "check",        required_argument, NULL,  'C' },
+		{ "ignore-check", no_argument,       NULL,  OPT_IGNORE_CHECK },
 		{ "block-size",   required_argument, NULL,  OPT_BLOCK_SIZE },
 		{ "block-list",  required_argument, NULL,  OPT_BLOCK_LIST },
 		{ "memlimit-compress",   required_argument, NULL, OPT_MEM_COMPRESS },
@@ -176,6 +180,7 @@ parse_real(args_info *args, int argc, char **argv)
 		{ "memory",       required_argument, NULL,  'M' }, // Old alias
 		{ "no-adjust",    no_argument,       NULL,  OPT_NO_ADJUST },
 		{ "threads",      required_argument, NULL,  'T' },
+		{ "flush-timeout", required_argument, NULL, OPT_FLUSH_TIMEOUT },
 
 		{ "extreme",      no_argument,       NULL,  'e' },
 		{ "fast",         no_argument,       NULL,  '0' },
@@ -436,6 +441,10 @@ parse_real(args_info *args, int argc, char **argv)
 			break;
 		}
 
+		case OPT_IGNORE_CHECK:
+			opt_ignore_check = true;
+			break;
+
 		case OPT_BLOCK_SIZE:
 			opt_block_size = str_to_uint64("block-size", optarg,
 					0, LZMA_VLI_MAX);
@@ -481,6 +490,11 @@ parse_real(args_info *args, int argc, char **argv)
 
 		case OPT_NO_ADJUST:
 			opt_auto_adjust = false;
+			break;
+
+		case OPT_FLUSH_TIMEOUT:
+			opt_flush_timeout = str_to_uint64("flush-timeout",
+					optarg, 0, UINT64_MAX);
 			break;
 
 		default:
