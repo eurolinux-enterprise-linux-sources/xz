@@ -3,7 +3,7 @@
 Summary:	LZMA compression utilities
 Name:		xz
 Version:	5.1.2
-Release:	5alpha%{?dist}
+Release:	8alpha%{?dist}
 License:	LGPLv2+
 Group:		Applications/File
 # official upstream release
@@ -84,8 +84,12 @@ for i in `find . -name config.sub`; do
 done
 
 %build
-CFLAGS="%{optflags} -D_FILE_OFFSET_BITS=64" \
-CXXFLAGS="%{optflags} -D_FILE_OFFSET_BITS=64" \
+CFLAGS="%{optflags} -D_FILE_OFFSET_BITS=64"
+%ifarch %{power64}
+    CFLAGS=`echo $CFLAGS | xargs -n 1 | sed 's|^-O2$|-O3|g' | xargs -n 100`
+%endif
+export CFLAGS
+
 %configure --disable-static
 sed -i 's|^hardcode_libdir_flag_spec=.*|hardcode_libdir_flag_spec=""|g' libtool
 sed -i 's|^runpath_var=LD_RUN_PATH|runpath_var=DIE_RPATH_DIE|g' libtool
@@ -151,6 +155,15 @@ rm -rf %{buildroot}
 %{_mandir}/man1/*lz*
 
 %changelog
+* Fri Jan 24 2014 Daniel Mach <dmach@redhat.com> - 5.1.2-8alpha
+- Mass rebuild 2014-01-24
+
+* Fri Jan 10 2014 Pavel Raiskup <praiskup@redhat.com> - 5.1.2-7alpha
+- build with -O3 on ppc64 (private #1051078)
+
+* Fri Dec 27 2013 Daniel Mach <dmach@redhat.com> - 5.1.2-6alpha
+- Mass rebuild 2013-12-27
+
 * Tue Apr 09 2013 Pavel Raiskup <praiskup@redhat.com> - 5.1.2-5alpha
 - fix manual page inconsistencies with help output (private #948533)
 - enable/fix the 'xzgrep -h' (private #850898)
