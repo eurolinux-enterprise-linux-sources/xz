@@ -3,7 +3,7 @@
 Summary:	LZMA compression utilities
 Name:		xz
 Version:	5.1.2
-Release:	12alpha%{?dist}
+Release:	5alpha%{?dist}
 License:	LGPLv2+
 Group:		Applications/File
 # official upstream release
@@ -23,17 +23,6 @@ Patch0:		xz-5.1.2alpha-man-page-day.patch
 # ~> upstream (5019413a0)
 # ~> #850898
 Patch1:		xz-5.1.2alpha-xzgrep-and-h-option.patch
-
-# fix less version checking
-# ~> upstream (db5c1817fa, 9e6dabcf22)
-# ~> #1082639, #1015924
-Patch2:		xz-5.1.2alpha-less-version-check.patch
-
-# fix for bad xzgrep exit value when not _all_ files match
-# ~> upstream (ceca37901783)
-# ~> #1109123
-Patch3:		xz-5.1.2alpha-xzgrep-exit.patch
-Patch4:		xz-5.1.2alpha-xzgrep-exit-test.patch
 
 %description
 XZ Utils are an attempt to make LZMA compression easy to use on free (as in
@@ -89,21 +78,14 @@ commands that deal with the older LZMA format.
 %setup -q -a1 -n %{name}-%{version}alpha
 %patch0  -p1 -b .man-page-day
 %patch1  -p1 -b .xzgrep-and-h-option
-%patch2  -p1 -b .less-version-check
-%patch3  -p1 -b .xzgrep-exit-status
-%patch4  -p1 -b .xzgrep-exit-status-test
 
 for i in `find . -name config.sub`; do
   perl -pi -e "s/ppc64-\*/ppc64-\* \| ppc64p7-\*/" $i
 done
 
 %build
-CFLAGS="%{optflags} -D_FILE_OFFSET_BITS=64"
-%ifarch %{power64}
-    CFLAGS=`echo $CFLAGS | xargs -n 1 | sed 's|^-O2$|-O3|g' | xargs -n 100`
-%endif
-export CFLAGS
-
+CFLAGS="%{optflags} -D_FILE_OFFSET_BITS=64" \
+CXXFLAGS="%{optflags} -D_FILE_OFFSET_BITS=64" \
 %configure --disable-static
 sed -i 's|^hardcode_libdir_flag_spec=.*|hardcode_libdir_flag_spec=""|g' libtool
 sed -i 's|^runpath_var=LD_RUN_PATH|runpath_var=DIE_RPATH_DIE|g' libtool
@@ -169,25 +151,6 @@ rm -rf %{buildroot}
 %{_mandir}/man1/*lz*
 
 %changelog
-* Wed Aug 12 2015 Scientific Linux Auto Patch Process <SCIENTIFIC-LINUX-DEVEL@LISTSERV.FNAL.GOV>
-- Eliminated rpmbuild "bogus date" error due to inconsistent weekday,
-  by assuming the date is correct and changing the weekday.
-
-* Wed Jul 08 2015 Pavel Raiskup <praiskup@redhat.com> - 5.1.2-12alpha
-- xzgrep: return 0 when at least one file matches (rhbz#1109123)
-
-* Tue Jun 17 2014 Pavel Raiskup <praiskup@redhat.com> - 5.1.2-9alpha
-- better check the version of less binary (#1082639)
-
-* Fri Jan 24 2014 Daniel Mach <dmach@redhat.com> - 5.1.2-8alpha
-- Mass rebuild 2014-01-24
-
-* Fri Jan 10 2014 Pavel Raiskup <praiskup@redhat.com> - 5.1.2-7alpha
-- build with -O3 on ppc64 (private #1051078)
-
-* Fri Dec 27 2013 Daniel Mach <dmach@redhat.com> - 5.1.2-6alpha
-- Mass rebuild 2013-12-27
-
 * Tue Apr 09 2013 Pavel Raiskup <praiskup@redhat.com> - 5.1.2-5alpha
 - fix manual page inconsistencies with help output (private #948533)
 - enable/fix the 'xzgrep -h' (private #850898)
